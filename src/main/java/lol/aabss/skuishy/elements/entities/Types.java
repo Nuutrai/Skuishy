@@ -67,7 +67,8 @@ public class Types {
         }
 
         if (Skript.classExists("org.bukkit.entity.Frog") && Classes.getExactClassInfo(Frog.Variant.class) == null) {
-            Classes.registerClass(RegistryClassInfo.create(RegistryAccess.registryAccess().getRegistry(RegistryKey.FROG_VARIANT),
+            if (Skript.classExists("io.papermc.paper.registry.RegistryAccess") && Skript.classExists("io.papermc.paper.registry.RegistryKey"))
+                Classes.registerClass(RegistryClassInfo.create(RegistryAccess.registryAccess().getRegistry(RegistryKey.FROG_VARIANT),
                             Frog.Variant.class, "frogvariant")
                     .user("frog ?variants?")
                     .name("Frog Variant")
