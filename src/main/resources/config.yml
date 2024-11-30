@@ -1,37 +1,46 @@
-# the permission message for /skuishy's sub commands
-permission-message: "<red>You can not execute this sub-command!"
 
-# whether players with the permission 'skuishy.updatechecker' should be notified if there is an update.
-update-checker: true
+# Command specific settings
+command:
+    # the permission message for /skuishy's sub commands
+    permission-message: "<red>You can not execute this sub-command!"
 
-# whether the plugin should automatically update during shutdown when there is a new version
-auto-update: false
+# Whether Skuishy should automatically check for updates every now and then
+check-for-updates: true
 
-# whether a message should be sent whenever a new version check happens.
-version-check-msg: true
+# Whether Skuishy should automatically download updates upon server restart
+#  - this setting requires check-for-updates to be enabled as well to run
+auto-update-on-shutdown: false
 
-# whether index should start from 0 (false) or it should start from 1 (true)
+# Whether an administrator user should receive a notification upon joining about a found update version
+update-available-message: true
+
+# whether indices should start from 0 (false) or if it should start from 1 (true)
+# Dev Note: this setting is poorly named and not used in the majority of the areas in the plugin
+# this setting only effects decent holograms and may be removed in the future
 prefer-skript-index: false
 
-# elements -----
+# Disable specific element packages from loading on startup
+disable-elements:
+    # Setting this value to true will disable all entity specific syntax
+    entities: false
+    # Setting this value to true will disable all non-packaged syntax
+    #   - disabling this setting could cause conflicts with other elements
+    general: false
+    # Setting this value to true will disable all musical/note syntax
+    note: false
+    # Setting this value to true will disable all permission syntax
+    permissions: false
+    # Setting this value to true will disable all plugin syntax
+    plugins: false
+    # Setting this value to true will disable all skin related syntax
+    skin-api: false
 
-# whether entity elements should be loaded
-entities-elements: true
+# Mineskin API information, this is required in order to use the skin api
+# you can get an api-key at https://mineskin.org
+skin-api:
+    # Represents an api access agent, this setting does for the most part nothing and is encouraged to
+    # leave empty, all this does is require someone to have both an agent and api key
+    #user-agent: INSERT AN API AGENT
 
-# whether general elements should be loaded
-general-elements: true
-
-# whether note elements should be loaded
-note-elements: true
-
-# whether permission elements should be loaded
-permission-elements: true
-
-# whether persistence elements should be loaded
-persistence-elements: true
-
-# whether plugin elements should be loaded
-plugin-elements: true
-
-# whether skin elements should be loaded
-skin-elements: true
+    # Represents an api access token, this setting is required in order to use any of the skin-api settings safely
+    api-key: INSERT YOUR API KEY
