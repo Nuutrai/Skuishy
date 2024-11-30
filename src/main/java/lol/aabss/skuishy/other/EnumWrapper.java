@@ -134,7 +134,9 @@ public final class EnumWrapper<E extends Enum<E>> {
     }
 
     private void registerComparator(Class<E> c) {
-        Comparators.registerComparator(c, c, (o1, o2) -> Relation.get(o1.equals(o2)));
+		// Prevents a stacktrace from forming if a comparator already exists
+		if (!Comparators.exactComparatorExists(c, c))
+			Comparators.registerComparator(c, c, (o1, o2) -> Relation.get(o1.equals(o2)));
     }
 
 }
