@@ -9,18 +9,21 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.profile.PlayerTextures;
+import org.jetbrains.annotations.Nullable;
 import org.mineskin.GenerateOptions;
 import org.mineskin.Java11RequestHandler;
 import org.mineskin.MineSkinClient;
-import org.mineskin.data.Texture;
+import org.mineskin.data.SkinInfo;
+import org.mineskin.data.TextureInfo;
 import org.mineskin.data.Variant;
 import org.mineskin.data.Visibility;
+import org.mineskin.request.GenerateRequest;
 
-import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,8 +59,8 @@ public class SkinWrapper {
         }
     }
 
-    public static void setSkin(Player player, Texture texture) {
-        setSkin(player, texture.value(), texture.signature());
+    public static void setSkin(Player player, TextureInfo texture) {
+        setSkin(player, texture.data().value(), texture.data().signature());
     }
 
     public static void setSkin(Player player, String value, @Nullable String signature){
@@ -108,14 +111,25 @@ public class SkinWrapper {
         }
     }
 
-    public static CompletableFuture<Texture> uploadSkin(BufferedImage image) throws IOException {
-        return client.generateUpload(image, options.variant(Blueprint.getVariant(image)))
-                .thenApply(result -> result.getSkin().data().texture());
+    public static CompletableFuture<TextureInfo> uploadSkin(BufferedImage image) throws IOException {
+		GenerateRequest request = GenerateRequest.upload(image).options(options.variant(Blueprint.getVariant(image)));
+		return client.queue().submit(request)
+			.thenCompose(queueResponse -> queueResponse.getJob().waitForCompletion(client))
+			.thenCompose(jobReference -> jobReference.getOrLoadSkin(client))
+			.thenApply(SkinInfo::texture);
     }
 
-    public static CompletableFuture<Texture> uploadSkin(String url) {
-        return client.generateUrl(url, options)
-                .thenApply(result -> result.getSkin().data().texture());
+    public static @Nullable CompletableFuture<TextureInfo> uploadSkin(String url) {
+		try {
+			GenerateRequest request = GenerateRequest.url(url).options(options);
+			return client.queue().submit(request)
+				.thenCompose(queueResponse -> queueResponse.getJob().waitForCompletion(client))
+				.thenCompose(jobReference -> jobReference.getOrLoadSkin(client))
+				.thenApply(SkinInfo::texture);
+		} catch (MalformedURLException exception) {
+			exception.printStackTrace();
+			return null;
+		}
     }
 
 }

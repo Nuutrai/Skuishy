@@ -18,12 +18,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mineskin.data.Texture;
+import org.mineskin.data.TextureInfo;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
 import static lol.aabss.skuishy.other.SkinWrapper.setSkin;
@@ -74,7 +75,9 @@ public class EffSetSkin extends Effect {
                                 }
                             } else {
                                 if (str.contains("://")) {
-                                    uploadSkin(str).whenCompleteAsync(getWhenComplete(event));
+									CompletableFuture<TextureInfo> textureInfo = uploadSkin(str);
+									if (textureInfo == null) return;
+                                    textureInfo.whenCompleteAsync(getWhenComplete(event));
                                 } else if (new File(str).exists()) {
                                     uploadSkin(ImageIO.read(new File(str))).whenCompleteAsync(getWhenComplete(event));
                                 } else {
@@ -111,8 +114,8 @@ public class EffSetSkin extends Effect {
         }
     }
 
-    private java.util.function.BiConsumer<? super Texture, ? super Throwable> getWhenComplete(Event event){
-        return (BiConsumer<Texture, Throwable>) (texture, throwable) -> {
+    private java.util.function.BiConsumer<? super TextureInfo, ? super Throwable> getWhenComplete(Event event){
+        return (BiConsumer<TextureInfo, Throwable>) (texture, throwable) -> {
             if (throwable == null) {
                 for (Player p : player.getArray(event)) {
                     setSkin(p, texture);

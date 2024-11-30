@@ -6,8 +6,12 @@ import ch.njol.skript.classes.Parser;
 import ch.njol.skript.lang.ParseContext;
 import ch.njol.skript.registrations.Classes;
 import io.papermc.paper.datapack.Datapack;
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
 import lol.aabss.skuishy.other.EnumWrapper;
+import lol.aabss.skuishy.other.RegistryClassInfo;
 import org.bukkit.Art;
+import org.bukkit.Registry;
 import org.bukkit.Rotation;
 import org.bukkit.Statistic;
 import org.bukkit.entity.SpawnCategory;
@@ -76,14 +80,16 @@ public class Types {
             );
         }
 
-        if (Skript.classExists("org.bukkit.Art") && Classes.getExactClassInfo(Art.class) == null) {
-            Classes.registerClass(new EnumWrapper<>(Art.class).getClassInfo("art")
-                    .user("arts?")
-                    .name("Art")
-                    .description("Represents a piece of art.")
-                    .since("2.8")
-            );
-        }
+		if (Skript.classExists("io.papermc.paper.registry.RegistryKey") && Skript.fieldExists(RegistryKey.class, "PAINTING_VARIANT"))
+			if (Classes.getExactClassInfo(Art.class) == null) {
+				Registry<Art> PAINTING_REGISTRY = RegistryAccess.registryAccess().getRegistry(RegistryKey.PAINTING_VARIANT);
+				Classes.registerClass(RegistryClassInfo.create(PAINTING_REGISTRY, Art.class, "art")
+					.user("arts?")
+					.name("Art")
+					.description("Represents a piece of art.")
+					.since("2.8")
+				);
+			}
 
         if (Skript.classExists("org.bukkit.Rotation") && Classes.getExactClassInfo(Rotation.class) == null) {
             Classes.registerClass(new EnumWrapper<>(Rotation.class).getClassInfo("rotation")
